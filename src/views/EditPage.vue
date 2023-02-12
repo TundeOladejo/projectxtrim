@@ -60,8 +60,8 @@
                             </button>
                         </span>
                         <span class="col" v-show="showDownload">
-                            <videoFileName class="btn btn-outline-success py-2 px-1 btn-sm" type="button" :href="video"
-                                download>Download<i class="bi bi-scissors"></i></videoFileName>
+                            <a class="btn btn-outline-success py-2 px-1 btn-sm" type="button" :href="video"
+                                download>Download<i class="bi bi-scissors"></i></a>
                         </span>
                         <span class="col-12">{{ trimError }}</span>
                     </div>
@@ -82,7 +82,7 @@ export default {
             video: '',
             start: 0,
             end: 0,
-            videoFileName: null,
+            vidName: null,
             message: "Upload",
             videoFile: null,
             duration: null,
@@ -97,7 +97,7 @@ export default {
     methods: {
         handleFileUpload(e) {
             this.videoFile = e.target.files[0];
-            this.videoFileName = this.videoFile.name
+            this.vidName = this.videoFile.name
         },
         transcode: async function () {
             const ffmpeg = createFFmpeg({
@@ -105,7 +105,7 @@ export default {
             });
             this.message = "Loading please wait...";
             await ffmpeg.load();
-            ffmpeg.FS("writeFile", this.videoFileName, await fetchFile(this.videoFile));
+            ffmpeg.FS("writeFile", this.vidName, await fetchFile(this.videoFile));
             this.isBtn = false
             this.isProgress = true
             ffmpeg.setProgress(({ ratio }) => {
@@ -113,7 +113,7 @@ export default {
                 this.percentageProgress = percentageCompleted
             });
 
-            await ffmpeg.run("-i", this.videoFileName, '-c:v', 'libx264', '-preset', 'ultrafast', "output.mp4");
+            await ffmpeg.run("-i", this.vidName, '-c:v', 'libx264', '-preset', 'ultrafast', "output.mp4");
             this.isBtn = true
             this.isProgress = false
             this.message = "Upload"
@@ -135,11 +135,11 @@ export default {
                 log: true,
             });
             await ffmpeg.load();
-            ffmpeg.FS("writeFile", this.videoFileName, await fetchFile(this.videoFile));
+            ffmpeg.FS("writeFile", this.vidName, await fetchFile(this.videoFile));
             ffmpeg.setProgress(({ ratio }) => {
                 this.trimBtnText = parseInt(ratio * 100).toFixed(2)
             });
-            await ffmpeg.run("-i", this.videoFileName, '-ss', this.start, '-to', this.end, "output.mp4");
+            await ffmpeg.run("-i", this.vidName, '-ss', this.start, '-to', this.end, "output.mp4");
             const data = ffmpeg.FS("readFile", "output.mp4");
             this.video = URL.createObjectURL(
                 new Blob([data.buffer], { type: "video/mp4" })
