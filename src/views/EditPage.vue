@@ -1,0 +1,169 @@
+<template>
+    <section>
+        <div class="container">
+            <div class="row pt-3 pt-md-5">
+                <div class="col-12 col-md-7">
+                    <div v-if="this.video != ''" class="videoPanel mb-3">
+                        <video ref="videoPlayer" class="h-100 w-100 border border-primary-subtle rounded" :src="video"
+                            id="video-preview" controls @loadedmetadata="getDuration" />
+                    </div>
+                    <div v-else class="videoPanel mb-3 border border-primary-subtle rounded empty shadow">
+                        <span class="fs-1"><i class="bi bi-person-video2"></i></span>
+                    </div>
+
+                    <div class="d-grid gap-3">
+                        <label class="form-label" for="customFile">
+                            Upload video to trim
+                        </label>
+                        <input type="file" class="form-control form-control-lg" id="customFile" accept="video/*"
+                            @change="handleFileUpload" required />
+
+                        <button @click="transcode" class="btn btn-outline-primary py-2" v-show="isBtn">
+                            {{ message }}
+                        </button>
+
+                        <div v-show="isProgress" class="progress" role="progressbar"
+                            aria-label="Animated striped example" :aria-valuenow="percentageProgress" aria-valuemin="0"
+                            aria-valuemax="100">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated"
+                                :style="{ width: percentageProgress + '%' }"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-5">
+                    <div class="row gap-4">
+                        <div class="col">
+                            <label for="customRange1" class="form-label">Start</label>
+                            <input type="range" class="form-range" id="start" min="0" :max="this.duration"
+                                v-model="start" />
+                            <span class="badge text-bg-secondary">{{ fancyTimeFormat(this.start) }}</span>
+                        </div>
+                        <div class="col">
+                            <label for="customRange1" class="form-label">End</label>
+                            <input type="range" class="form-range" id="end" min="0" :max="this.duration"
+                                v-model="end" />
+                            <span class="badge text-bg-secondary">{{ fancyTimeFormat(this.end) }}</span>
+                        </div>
+                    </div>
+                    <div class="row pt-3 gap-3">
+                        <span class="col-12">Video Duration: <span class="badge text-bg-dark">{{
+                            fancyTimeFormat(this.duration)
+                        }}</span></span>
+                        <span class="col">
+                            <button class="btn btn-outline-danger py-2 px-1 btn-sm" type="button" @click="trimvideo">
+                                <div class="spinner-border spinner-border-sm" role="status"
+                                    v-show="trimBtnText != 'Trim'">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                {{ trimBtnText }}<i class="bi bi-scissors"></i>
+                            </button>
+                        </span>
+                        <span class="col" v-show="showDownload">
+                            <videoFileName class="btn btn-outline-success py-2 px-1 btn-sm" type="button" :href="video"
+                                download>Download<i class="bi bi-scissors"></i></videoFileName>
+                        </span>
+                        <span class="col-12">{{ trimError }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</template>
+
+<script>
+import { createFFmpeg, fetchFile } from "@ffmpeg/ffmpeg";
+import misc from "../utils/misc";
+
+export default {
+    name: "EditPage",
+    data() {
+        return {
+            video: '',
+            start: 0,
+            end: 0,
+            videoFileName: null,
+            message: "Upload",
+            videoFile: null,
+            duration: null,
+            isBtn: true,
+            isProgress: false,
+            percentageProgress: 0,
+            trimBtnText: "Trim",
+            showDownload: false,
+            trimError: ""
+        };
+    },
+    methods: {
+        handleFileUpload(e) {
+            this.videoFile = e.target.files[0];
+            this.videoFileName = this.videoFile.name
+        },
+        transcode: async function () {
+            const ffmpeg = createFFmpeg({
+                log: true,
+            });
+            this.message = "Loading please wait...";
+            await ffmpeg.load();
+            ffmpeg.FS("writeFile", this.videoFileName, await fetchFile(this.videoFile));
+            this.isBtn = false
+            this.isProgress = true
+            ffmpeg.setProgress(({ ratio }) => {
+                let percentageCompleted = parseInt(ratio * 100).toFixed(2)
+                this.percentageProgress = percentageCompleted
+            });
+
+            await ffmpeg.run("-i", this.videoFileName, '-c:v', 'libx264', '-preset', 'ultrafast', "output.mp4");
+            this.isBtn = true
+            this.isProgress = false
+            this.message = "Upload"
+            const data = ffmpeg.FS("readFile", "output.mp4");
+
+            this.video = URL.createObjectURL(
+                new Blob([data.buffer], { type: "video/mp4" })
+            );
+        },
+        getDuration() {
+            this.duration = Math.floor(this.$refs.videoPlayer.duration)
+        },
+        fancyTimeFormat(totalSeconds) {
+            return misc.fancyTimeFormat(totalSeconds)
+        },
+        trimvideo: async function () {
+            this.trimBtnText = "Triming";
+            const ffmpeg = createFFmpeg({
+                log: true,
+            });
+            await ffmpeg.load();
+            ffmpeg.FS("writeFile", this.videoFileName, await fetchFile(this.videoFile));
+            ffmpeg.setProgress(({ ratio }) => {
+                this.trimBtnText = parseInt(ratio * 100).toFixed(2)
+            });
+            await ffmpeg.run("-i", this.videoFileName, '-ss', this.start, '-to', this.end, "output.mp4");
+            const data = ffmpeg.FS("readFile", "output.mp4");
+            this.video = URL.createObjectURL(
+                new Blob([data.buffer], { type: "video/mp4" })
+            );
+            this.showDownload = true
+            this.clearForm()
+            this.trimBtnText = "Trim";
+        },
+        clearForm() {
+            this.start = 0
+            this.end = 0
+        },
+    },
+};
+</script>
+
+<style lang="scss">
+.videoPanel {
+    height: 300px
+}
+
+.empty {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+</style>

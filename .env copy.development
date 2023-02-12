@@ -1,0 +1,10 @@
+VUE_APP_TITLE="Dufuna Learning"
+VUE_APP_API_URL=http://staging-dufuna-service.cottacush.com/
+VUE_APP_CLIENT_SECRET=HkOG71GywS
+VUE_APP_CLIENT_ID=dufuna-service-staging
+VUE_APP_SITE_KEY=********
+NODE_ENV=development
+VUE_APP_LEARNING_WEB_URL=*******
+VUE_APP_GITHUB_CLIENT_ID=*********
+VUE_APP_LEARNING_SUPPORT_EMAIL=info@dufuna.org
+VUE_APP_GOOGLE_ANALYTICS="G-2LWJE7ELRC"
