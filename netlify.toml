@@ -3,6 +3,6 @@
   to = "/index.html"
   status = 200
 
-[redirects.headers]
+[redirects.headers] 
     Cross-Origin-Embedder-Policy = "require-corp"
     Cross-Origin-Opener-Policy = "same-origin"
