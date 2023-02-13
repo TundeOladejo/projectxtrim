@@ -18,9 +18,12 @@
                         <input type="file" class="form-control form-control-lg" id="customFile" accept="video/*"
                             @change="handleFileUpload" required />
 
-                        <button @click="transcode" class="btn btn-outline-primary py-2" v-show="isBtn">
-                            {{ message }}
-                        </button>
+                        <div class="mx-auto">
+                            <button @click="transcode" class="btn btn-outline-primary py-3" v-show="isBtn"
+                                :disabled="this.vidName == null">
+                                {{ message }}
+                            </button>
+                        </div>
 
                         <div v-show="isProgress" class="progress" role="progressbar"
                             aria-label="Animated striped example" :aria-valuenow="percentageProgress" aria-valuemin="0"
@@ -46,12 +49,13 @@
                             <span class="badge text-bg-secondary">{{ fancyTimeFormat(this.end) }}</span>
                         </div>
                     </div>
-                    <div class="row pt-3 gap-3">
-                        <span class="col-12">Video Duration: <span class="badge text-bg-dark">{{
+                    <div class="row pt-3">
+                        <span class="col-12 mb-3">Video Duration: <span class="badge text-bg-dark">{{
                             fancyTimeFormat(this.duration)
                         }}</span></span>
-                        <span class="col">
-                            <button class="btn btn-outline-danger py-2 px-1 btn-sm" type="button" @click="trimvideo">
+                        <span class="col-6">
+                            <button class="btn btn-outline-danger py-3 py-lg-2 px-1 btn-sm" type="button"
+                                @click="trimvideo" :disabled="this.vidName == null">
                                 <div class="spinner-border spinner-border-sm" role="status"
                                     v-show="trimBtnText != 'Trim'">
                                     <span class="visually-hidden">Loading...</span>
@@ -59,8 +63,8 @@
                                 {{ trimBtnText }}<i class="bi bi-scissors"></i>
                             </button>
                         </span>
-                        <span class="col" v-show="showDownload">
-                            <a class="btn btn-outline-success py-2 px-1 btn-sm" type="button" :href="video"
+                        <span class="col-6" v-show="showDownload">
+                            <a class="btn btn-outline-success py-3 py-lg-2 px-1 btn-sm" type="button" :href="video"
                                 download>Download<i class="bi bi-scissors"></i></a>
                         </span>
                         <span class="col-12">{{ trimError }}</span>
@@ -103,7 +107,7 @@ export default {
             const ffmpeg = createFFmpeg({
                 log: true,
             });
-            this.message = "Loading please wait...";
+            this.message = "Loading...";
             await ffmpeg.load();
             ffmpeg.FS("writeFile", this.vidName, await fetchFile(this.videoFile));
             this.isBtn = false
@@ -165,5 +169,10 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.btn:disabled {
+    border: 1px solid grey;
+    color: grey;
 }
 </style>
