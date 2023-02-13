@@ -1,5 +1,5 @@
 import { fileURLToPath, URL } from 'node:url'
-import crossOriginIsolation from 'vite-plugin-cross-origin-isolation'
+// import crossOriginIsolation from 'vite-plugin-cross-origin-isolation'
 
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
@@ -8,11 +8,15 @@ import vue from '@vitejs/plugin-vue'
 export default defineConfig({
   plugins: [
     vue(),
-    crossOriginIsolation()
+    // crossOriginIsolation()
   ],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
+  headers: {
+    'Cross-Origin-Opener-Policy': 'same-origin',
+    'Cross-Origin-Embedder-Policy': 'require-corp'
+  }
 })
