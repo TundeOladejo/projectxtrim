@@ -4,7 +4,7 @@
             <div class="row pt-3 pt-md-5">
                 <div class="col-12 col-md-7">
                     <div v-if="this.videoSrc != ''" class="videoPanel mb-3">
-                        <video ref="videoPlayer" class="h-100 w-100 border border-primary-subtle rounded" :src="videoSrc"
+                        <video ref="videoPlayer" class="h-100 w-100" :src="videoSrc"
                             id="video-preview" controls @loadedmetadata="getDuration" />
                     </div>
                     <div v-else class="videoPanel mb-3 border border-primary-subtle rounded empty shadow">
@@ -159,10 +159,6 @@ export default {
 <style lang="scss">
 .videoPanel {
     height: 300px
-}
-
-video {
-    object-fit: cover;
 }
 
 .empty {
