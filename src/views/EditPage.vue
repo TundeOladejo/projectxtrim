@@ -11,8 +11,6 @@
                         <span class="fs-1"><i class="bi bi-person-video2"></i></span>
                     </div>
 
-                    <canvas ref="canvas"></canvas>
-
                     <div class="d-grid gap-3">
                         <label class="form-label" for="customFile">
                             Upload video to trim
@@ -57,7 +55,7 @@
                         }}</span></span>
                         <span class="col-6">
                             <button class="btn btn-outline-danger py-3 py-lg-2 px-1 btn-sm" type="button"
-                                @click="trimvideo" :disabled="this.videoSrc == null">
+                                @click="trimvideo" :disabled="this.videoSrc == ''">
                                 <div class="spinner-border spinner-border-sm" role="status"
                                     v-show="trimBtnText != 'Trim'">
                                     <span class="visually-hidden">Loading...</span>
@@ -100,41 +98,18 @@ export default {
             trimEnd: 0,
             trimming: false,
             trimHandle: null,
-            videoFile: null
+            videoFile: null,
+            fileName: null
         };
     },
     methods: {
         handleFileUpload(e) {
             let file = e.target.files[0];
+            this.fileName = file.name;
             let blobURL = URL.createObjectURL(file);
+            this.videoFile = file
             this.videoSrc = blobURL;
-            this.a = file
-
         },
-        // transcode: async function () {
-        //     const ffmpeg = createFFmpeg({
-        //         log: true,
-        //     });
-        //     this.message = "Loading...";
-        //     await ffmpeg.load();
-        //     ffmpeg.FS("writeFile", this.vidName, await fetchFile(this.videoFile));
-        //     this.isBtn = false
-        //     this.isProgress = true
-        //     ffmpeg.setProgress(({ ratio }) => {
-        //         let percentageCompleted = parseInt(ratio * 100).toFixed(2)
-        //         this.percentageProgress = percentageCompleted
-        //     });
-
-        //     await ffmpeg.run("-i", this.vidName, '-c:v', 'libx264', '-preset', 'ultrafast', "output.mp4");
-        //     this.isBtn = true
-        //     this.isProgress = false
-        //     this.message = "Upload"
-        //     const data = ffmpeg.FS("readFile", "output.mp4");
-
-        //     this.video = URL.createObjectURL(
-        //         new Blob([data.buffer], { type: "video/mp4" })
-        //     );
-        // },
         getDuration() {
             this.duration = Math.floor(this.$refs.videoPlayer.duration)
         },
@@ -147,11 +122,11 @@ export default {
                 log: true,
             });
             await ffmpeg.load();
-            ffmpeg.FS("writeFile", this.videoSrc, await fetchFile(this.videoFile));
+            ffmpeg.FS("writeFile", this.fileName, await fetchFile(this.videoFile));
             ffmpeg.setProgress(({ ratio }) => {
                 this.trimBtnText = parseInt(ratio * 100).toFixed(2)
             });
-            await ffmpeg.run("-i", this.videoSrc, '-ss', this.start, '-to', this.end, "output.mp4");
+            await ffmpeg.run("-i", this.fileName, '-ss', this.start, '-to', this.end, '-c', 'copy', "output.mp4");
             const data = ffmpeg.FS("readFile", "output.mp4");
             this.videoSrc = URL.createObjectURL(
                 new Blob([data.buffer], { type: "video/mp4" })
