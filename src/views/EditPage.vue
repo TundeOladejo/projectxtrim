@@ -3,13 +3,15 @@
         <div class="container">
             <div class="row pt-3 pt-md-5">
                 <div class="col-12 col-md-7">
-                    <div v-if="this.video != ''" class="videoPanel mb-3">
-                        <video ref="videoPlayer" class="h-100 w-100 border border-primary-subtle rounded" :src="video"
+                    <div v-if="this.videoSrc != ''" class="videoPanel mb-3">
+                        <video ref="videoPlayer" class="h-100 w-100 border border-primary-subtle rounded" :src="videoSrc"
                             id="video-preview" controls @loadedmetadata="getDuration" />
                     </div>
                     <div v-else class="videoPanel mb-3 border border-primary-subtle rounded empty shadow">
                         <span class="fs-1"><i class="bi bi-person-video2"></i></span>
                     </div>
+
+                    <canvas ref="canvas"></canvas>
 
                     <div class="d-grid gap-3">
                         <label class="form-label" for="customFile">
@@ -55,7 +57,7 @@
                         }}</span></span>
                         <span class="col-6">
                             <button class="btn btn-outline-danger py-3 py-lg-2 px-1 btn-sm" type="button"
-                                @click="trimvideo" :disabled="this.video == null">
+                                @click="trimvideo" :disabled="this.videoSrc == null">
                                 <div class="spinner-border spinner-border-sm" role="status"
                                     v-show="trimBtnText != 'Trim'">
                                     <span class="visually-hidden">Loading...</span>
@@ -64,7 +66,7 @@
                             </button>
                         </span>
                         <span class="col-6" v-show="showDownload">
-                            <a class="btn btn-outline-success py-3 py-lg-2 px-1 btn-sm" type="button" :href="video"
+                            <a class="btn btn-outline-success py-3 py-lg-2 px-1 btn-sm" type="button" :href="videoSrc"
                                 download>Download<i class="bi bi-scissors"></i></a>
                         </span>
                         <span class="col-12">{{ trimError }}</span>
@@ -83,7 +85,7 @@ export default {
     name: "EditPage",
     data() {
         return {
-            video: '',
+            videoSrc: '',
             start: 0,
             end: 0,
             message: "Upload",
@@ -93,14 +95,21 @@ export default {
             percentageProgress: 0,
             trimBtnText: "Trim",
             showDownload: false,
-            trimError: ""
+            trimError: "",
+            trimStart: 0,
+            trimEnd: 0,
+            trimming: false,
+            trimHandle: null,
+            videoFile: null
         };
     },
     methods: {
         handleFileUpload(e) {
             let file = e.target.files[0];
             let blobURL = URL.createObjectURL(file);
-            this.video = blobURL
+            this.videoSrc = blobURL;
+            this.a = file
+
         },
         // transcode: async function () {
         //     const ffmpeg = createFFmpeg({
@@ -138,13 +147,13 @@ export default {
                 log: true,
             });
             await ffmpeg.load();
-            ffmpeg.FS("writeFile", this.video, await fetchFile(this.file));
+            ffmpeg.FS("writeFile", this.videoSrc, await fetchFile(this.videoFile));
             ffmpeg.setProgress(({ ratio }) => {
                 this.trimBtnText = parseInt(ratio * 100).toFixed(2)
             });
-            await ffmpeg.run("-i", this.video, '-ss', this.start, '-to', this.end, "output.mp4");
+            await ffmpeg.run("-i", this.videoSrc, '-ss', this.start, '-to', this.end, "output.mp4");
             const data = ffmpeg.FS("readFile", "output.mp4");
-            this.video = URL.createObjectURL(
+            this.videoSrc = URL.createObjectURL(
                 new Blob([data.buffer], { type: "video/mp4" })
             );
             this.showDownload = true
@@ -156,6 +165,19 @@ export default {
             this.end = 0
         },
     },
+//     mounted() {
+//     const canvas = this.$refs.canvas;
+//     const video = this.$refs.video;
+//     const ctx = canvas.getContext("2d");
+
+//     video.addEventListener("play", () => {
+//       const draw = () => {
+//         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+//         requestAnimationFrame(draw);
+//       };
+//       draw();
+//     });
+//   }
 };
 </script>
 
@@ -177,5 +199,28 @@ video {
 .btn:disabled {
     border: 1px solid grey;
     color: grey;
+}
+
+.trim-controls {
+    position: relative;
+    height: 30px;
+    margin-top: 10px;
+  }
+  
+  .trim-handle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 5px;
+    background-color: blue;
+    cursor: col-resize;
+  }
+  
+  .start-handle {
+    left: 0;
+}
+
+.end-handle {
+  right: 0;
 }
 </style>
