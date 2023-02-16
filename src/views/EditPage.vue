@@ -111,8 +111,8 @@ export default {
             this.videoFile = file
             this.videoSrc = blobURL;
         },
-        getDuration: async function() {
-            this.duration = await this.$refs.videoPlayer.duration
+        getDuration: function() {
+            this.duration = Math.floor(this.$refs.videoPlayer.duration)
             this.rangeValue = [0, this.duration]
         },
         revertChanges() {
