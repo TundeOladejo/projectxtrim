@@ -16,8 +16,7 @@
                 <v-app>
                     <v-range-slider v-model="rangeValue" :min="0" :max="this.duration" strict thumb-label="always">
                         <template v-slot:thumb-label="{ modelValue }">
-                            <!-- {{ this.fancyTimeFormat(modelValue.toFixed(0)) }} -->
-                            {{ modelValue.toFixed(0) }}
+                            {{ this.fancyTimeFormat(modelValue.toFixed(0)) }}
                           </template>
                     </v-range-slider>
                 </v-app>
@@ -108,13 +107,14 @@ export default {
             let blobURL = URL.createObjectURL(file);
             this.videoFile = file
             this.videoSrc = blobURL;
+            this.end = this.duration
         },
         revertChanges() {
             this.videoSrc = this.oldVal;
             this.showDownload = false
         },
         getDuration() {
-            this.duration = Math.floor(this.$refs.videoPlayer.duration)
+            this.duration = this.$refs.videoPlayer.duration
             this.rangeValue = [0, this.duration]
         },
         fancyTimeFormat(totalSeconds) {
