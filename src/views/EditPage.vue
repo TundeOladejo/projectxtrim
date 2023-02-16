@@ -76,12 +76,12 @@
 
 <script>
 import { createFFmpeg, fetchFile } from "@ffmpeg/ffmpeg";
-import { VRangeSlider, VApp } from 'vuetify/components'
+// import { VRangeSlider, VApp } from 'vuetify/components'
 import misc from "../utils/misc";
 
 export default {
     name: "EditPage",
-    components: { VRangeSlider, VApp },
+    // components: { VRangeSlider, VApp },
     data() {
         return {
             videoSrc: '',
@@ -107,11 +107,9 @@ export default {
             this.clearForm()
             let file = e.target.files[0];
             this.fileName = file.name;
-            this.duration = file.duration;
             let blobURL = URL.createObjectURL(file);
             this.videoFile = file
             this.videoSrc = blobURL;
-            this.rangeValue = [0, this.duration]
         },
         revertChanges() {
             this.videoSrc = this.oldVal;
