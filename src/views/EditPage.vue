@@ -85,7 +85,7 @@ export default {
     data() {
         return {
             videoSrc: '',
-            duration: 0,
+            duration: null,
             trimBtnText: "Trim",
             showDownload: false,
             videoFile: null,
@@ -95,6 +95,9 @@ export default {
         };
     },
     watch: {
+        duration: function(value) {
+            console.log(value)
+        },
         videoSrc: function(newVal, oldVal) {
             this.oldVal = oldVal
         }

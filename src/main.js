@@ -5,7 +5,7 @@ import router from "./router";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
 // Vuetify
-import 'vuetify/styles'
+// import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
 import * as directives from 'vuetify/directives'
 
