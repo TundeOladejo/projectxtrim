@@ -4,8 +4,19 @@ import router from "./router";
 
 import "bootstrap-icons/font/bootstrap-icons.css";
 
+// Vuetify
+// import 'vuetify/styles'
+import { createVuetify } from 'vuetify'
+import * as directives from 'vuetify/directives'
+
+const vuetify = createVuetify({
+  directives,
+})
+
+
+
 const app = createApp(App);
 
-app.use(router);
+app.use(router).use(vuetify);
 
 app.mount("#app");
