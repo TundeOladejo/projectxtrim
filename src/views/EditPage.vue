@@ -112,7 +112,7 @@ export default {
             this.videoSrc = blobURL;
         },
         getDuration: function() {
-            this.duration = Math.floor(this.$refs.videoPlayer.duration)
+            this.duration = parseInt(this.$refs.videoPlayer.duration)
             this.rangeValue = [0, this.duration]
         },
         revertChanges() {
