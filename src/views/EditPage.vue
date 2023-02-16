@@ -16,7 +16,8 @@
                 <v-app>
                     <v-range-slider v-model="rangeValue" :min="0" :max="this.duration" strict thumb-label="always">
                         <template v-slot:thumb-label="{ modelValue }">
-                            {{ this.fancyTimeFormat(modelValue.toFixed(0)) }}
+                            <!-- {{ this.fancyTimeFormat(modelValue.toFixed(0)) }} -->
+                            {{ modelValue.toFixed(0) }}
                           </template>
                     </v-range-slider>
                 </v-app>
