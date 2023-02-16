@@ -85,7 +85,7 @@ export default {
     data() {
         return {
             videoSrc: '',
-            duration: null,
+            duration: 0,
             trimBtnText: "Trim",
             showDownload: false,
             videoFile: null,
@@ -110,14 +110,13 @@ export default {
             let blobURL = URL.createObjectURL(file);
             this.videoFile = file
             this.videoSrc = blobURL;
-            this.end = this.duration
         },
         revertChanges() {
             this.videoSrc = this.oldVal;
             this.showDownload = false
         },
         getDuration() {
-            this.duration = Math.floor(this.$refs.videoPlayer.duration)
+            this.duration = this.videoFile.duration
             this.rangeValue = [0, this.duration]
         },
         fancyTimeFormat(totalSeconds) {
