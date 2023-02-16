@@ -12,7 +12,7 @@
                     <div class="video-thumbnails" ref="thumbnails"></div>
             </div>
 
-            <div class="d-flex rangeSlider pt-3 pb-1 border rounded align-items-center " v-if="this.videoSrc !=''">
+            <div class="d-flex pt-3 pb-1 border rounded" v-if="this.videoSrc !=''">
                 <v-app>
                     <v-range-slider v-model="rangeValue" :min="0" :max="this.duration" strict thumb-label="always">
                         <template v-slot:thumb-label="{ modelValue }">
