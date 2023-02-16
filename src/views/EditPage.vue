@@ -14,7 +14,7 @@
 
             <div class="d-flex rangeSlider pt-3 pb-1 border rounded align-items-center " v-if="this.videoSrc !=''">
                 <v-app>
-                    <v-range-slider v-model="rangeValue" :min="0" :max="this.duration" strict thumb-label="always">
+                    <v-range-slider v-model="rangeValue" strict thumb-label="always">
                         <template v-slot:thumb-label="{ modelValue }">
                             {{ this.fancyTimeFormat(modelValue.toFixed(0)) }}
                           </template>
@@ -114,7 +114,7 @@ export default {
             this.showDownload = false
         },
         getDuration() {
-            this.duration = this.$refs.videoPlayer.duration
+            this.duration = Math.floor(this.$refs.videoPlayer.duration)
             this.rangeValue = [0, this.duration]
         },
         fancyTimeFormat(totalSeconds) {
