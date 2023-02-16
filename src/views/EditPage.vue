@@ -95,7 +95,7 @@ export default {
         };
     },
     watch: {
-        duration: function(value) {
+        rangeValue: function(value) {
             console.log(value)
         },
         videoSrc: function(newVal, oldVal) {
@@ -111,6 +111,7 @@ export default {
             let blobURL = URL.createObjectURL(file);
             this.videoFile = file
             this.videoSrc = blobURL;
+            this.rangeValue = [0, this.duration]
         },
         revertChanges() {
             this.videoSrc = this.oldVal;
