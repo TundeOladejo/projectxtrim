@@ -76,12 +76,12 @@
 
 <script>
 import { createFFmpeg, fetchFile } from "@ffmpeg/ffmpeg";
-// import { VRangeSlider, VApp } from 'vuetify/components'
+import { VRangeSlider, VApp } from 'vuetify/components'
 import misc from "../utils/misc";
 
 export default {
     name: "EditPage",
-    // components: { VRangeSlider, VApp },
+    components: { VRangeSlider, VApp },
     data() {
         return {
             videoSrc: '',
@@ -111,13 +111,13 @@ export default {
             this.videoFile = file
             this.videoSrc = blobURL;
         },
+        getDuration: async function() {
+            this.duration = await this.$refs.videoPlayer.duration
+            this.rangeValue = [0, this.duration]
+        },
         revertChanges() {
             this.videoSrc = this.oldVal;
             this.showDownload = false
-        },
-        getDuration() {
-            this.duration = Math.floor(this.$refs.videoPlayer.duration)
-            this.rangeValue = [0, this.duration]
         },
         fancyTimeFormat(totalSeconds) {
             return misc.fancyTimeFormat(totalSeconds)
