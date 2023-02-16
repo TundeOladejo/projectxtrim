@@ -107,6 +107,7 @@ export default {
             this.clearForm()
             let file = e.target.files[0];
             this.fileName = file.name;
+            this.duration = file.duration;
             let blobURL = URL.createObjectURL(file);
             this.videoFile = file
             this.videoSrc = blobURL;
@@ -116,7 +117,7 @@ export default {
             this.showDownload = false
         },
         getDuration() {
-            this.duration = this.videoFile.duration
+            this.duration = Math.floor(this.$refs.videoPlayer.duration)
             this.rangeValue = [0, this.duration]
         },
         fancyTimeFormat(totalSeconds) {
