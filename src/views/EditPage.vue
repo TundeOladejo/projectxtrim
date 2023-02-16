@@ -12,15 +12,13 @@
                     <div class="video-thumbnails" ref="thumbnails"></div>
             </div>
 
-            <!-- <div class="d-flex pt-3 pb-1 border rounded" v-if="this.videoSrc !=''"> -->
-                <v-app v-if="this.videoSrc !=''">
-                    <v-range-slider v-model="rangeValue" :min="0" :max="this.duration" strict thumb-label="always">
-                        <template v-slot:thumb-label="{ modelValue }">
-                            {{ this.fancyTimeFormat(modelValue.toFixed(0)) }}
-                          </template>
-                    </v-range-slider>
-                </v-app>
-            <!-- </div> -->
+            <v-app v-if="this.videoSrc !=''" >
+                <v-range-slider v-model="rangeValue" :min="0" :max="this.duration" strict thumb-label="always">
+                    <template v-slot:thumb-label="{ modelValue }">
+                        {{ this.fancyTimeFormat(modelValue.toFixed(0)) }}
+                        </template>
+                </v-range-slider>
+            </v-app>
             
             <div class="row pt-4 align-items-center">
                 <div class="col pb-3">
@@ -95,9 +93,6 @@ export default {
         };
     },
     watch: {
-        rangeValue: function(value) {
-            console.log(value)
-        },
         videoSrc: function(newVal, oldVal) {
             this.oldVal = oldVal
         }
